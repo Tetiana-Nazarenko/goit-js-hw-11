@@ -6,6 +6,11 @@ img {
   width: 100%;
   height: 70%;
 }
+a {
+  align-items: center;
+  margin: 0 auto;
+  text-decoration: none;
+}
 .search-form {
   display: block;
   margin: 0 auto;
@@ -17,6 +22,7 @@ img {
 .input-text {
   height: 50px;
   width: 50%;
+  font-size: 18px;
   border: 1px solid rgba(33, 33, 33, 0.2);
   border-radius: 4px;
   margin-top: 4px;
@@ -61,7 +67,8 @@ img {
   display: block;
   width: 350px;
   height: 350px;
-  background: white;
+  background: rgb(245, 236, 236);
+  margin: 0 auto;
 }
 
 .is-hidden {
@@ -70,5 +77,12 @@ img {
 }
 .info {
   display: flex;
+  flex-direction: row;
+
   gap: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.info-item {
+  color: rgb(220, 120, 20);
 }
