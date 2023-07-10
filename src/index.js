@@ -13,11 +13,15 @@ class UnsplashAPI {
   query = null;
   page = 1;
 
+  per_page = 40;
+
   fetchPhotos() {
     return fetch(
       `${this.#BASE_URL}?key=${this.#API_KEY}&q=${this.query}&page=${
         this.page
-      }&image_type=photo&orientation=horizontal&safesearch=false&per_page=40`
+      }&image_type=photo&orientation=horizontal&safesearch=false&per_page=${
+        this.per_page
+      }`
     ).then(response => {
       if (!response.ok) {
         throw new Error(response.status);
@@ -29,12 +33,11 @@ class UnsplashAPI {
 
 //*** GALLERY ***
 const searchForm = document.querySelector('.search-form');
-//console.log(searchForm);
+
 const textInput = searchForm.firstElementChild;
 const gallery = document.querySelector('.gallery');
-//console.log(gallery);
+
 const loadMoreBtn = document.querySelector('.load-more');
-//console.log(loadMoreBtn);
 
 //*** */
 const unSplashInstance = new UnsplashAPI();
@@ -51,6 +54,11 @@ const handleSearchFormSubmit = event => {
   if (!searchForm) {
     return;
   }
+
+  if (searchQuery === '') {
+    return Notiflix.Notify.failure('Sorry, please enter your request!');
+  }
+
   unSplashInstance.query = searchQuery;
   islabelActive = true;
 
@@ -66,11 +74,28 @@ const handleSearchFormSubmit = event => {
         loadMoreBtn.classList.add('is-hidden');
         return;
       }
+
+      // if (data.hits.length < data.per_page) {
+      //   loadMoreBtn.classList.add('is-hidden');
+      // }
+
       Notiflix.Notify.success(
         `Hooray! We found totalHits images${data.totalHits}.`
       );
 
       gallery.innerHTML = renderList(data.hits);
+
+      lightbox.on('schown.simplelightbox');
+      lightbox.refresh();
+
+      //***ПЛАВНЕ ПРОКРУЧУВАННЯ */
+      const { height: cardHeight } = document
+        .querySelector('.gallery')
+        .firstElementChild.getBoundingClientRect();
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      });
     })
 
     .catch(err => {
@@ -86,20 +111,11 @@ searchForm.addEventListener('submit', handleSearchFormSubmit);
 //***SIMPLELEIGHTBOX */
 let lightbox = new SimpleLightbox('.gallery a', {
   /* options */
-  // overlay: true,
-  // overlayOpacity: 0.7,
-  // spinner: true,
-  // captions: true,
-  // close: true,
-  // loop: true,
-
   captionsData: 'alt',
   captionPosition: 'bottom',
   captionDelay: 250,
 });
-console.log(lightbox);
-nschow.SimpleLightbox;
-//lightbox.refresh();
+
 //**RENDER FRONTEND  */
 function renderList(photos) {
   return photos
@@ -148,7 +164,7 @@ function handleLoadMore() {
   unSplashInstance
     .fetchPhotos()
     .then(data => {
-      // if ((data.page === data.total_pages)) {
+      // if (data.page === data.total_pages) {
       //   Notiflix.Notify.failure(
       //     `We're sorry, but you've reached the end of search results.`
       //   );
@@ -159,9 +175,12 @@ function handleLoadMore() {
       );
       console.log(data);
       gallery.insertAdjacentHTML('beforeend', renderList(data.hits));
+
+      lightbox.on('schown.simplelightbox');
+      lightbox.refresh();
     })
     .catch(err => {
-      console.log('Error');
+      console.log(err);
     });
 }
 loadMoreBtn.addEventListener('click', handleLoadMore);
