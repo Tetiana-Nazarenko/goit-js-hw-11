@@ -1,0 +1,74 @@
+body {
+  background-color: rgb(238, 199, 6);
+}
+img {
+  display: block;
+  width: 100%;
+  height: 70%;
+}
+.search-form {
+  display: block;
+  margin: 0 auto;
+  height: 50%;
+
+  padding: 30px;
+  background-color: #4c0ede;
+}
+.input-text {
+  height: 50px;
+  width: 50%;
+  border: 1px solid rgba(33, 33, 33, 0.2);
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  padding-left: 30px;
+  margin-left: 50px;
+}
+.button {
+  width: 160px;
+  height: 50px;
+  text-align: center;
+  font-size: 18px;
+  margin: 0 auto;
+  background: #5e500c;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  border: none;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+}
+.btn-search {
+  margin-left: 30px;
+}
+.load-more {
+  margin: 0 auto;
+  display: block;
+  margin-bottom: 20px;
+}
+.button:hover,
+.button:focus {
+  background-color: rgb(28, 56, 95);
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gallery {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.photo-card {
+  display: block;
+  width: 350px;
+  height: 350px;
+  background: white;
+}
+
+.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.info {
+  display: flex;
+  gap: 20px;
+}
