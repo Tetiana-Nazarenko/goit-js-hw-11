@@ -13,6 +13,7 @@ import { PixabayAPI } from './pixabayApi';
 const searchForm = document.querySelector('.search-form');
 
 const textInput = searchForm.firstElementChild;
+
 const gallery = document.querySelector('.gallery');
 
 const loadMoreBtn = document.querySelector('.load-more');
@@ -57,6 +58,10 @@ const handleSearchFormSubmit = event => {
 
       if (data.hits.length < pixabayInstance.per_page) {
         loadMoreBtn.classList.add('is-hidden');
+
+        Notiflix.Notify.failure(
+          `We're sorry, but you've reached the end of search results.`
+        );
       }
 
       Notiflix.Notify.success(
@@ -105,15 +110,27 @@ function handleLoadMore() {
   pixabayInstance
     .fetchPhotos()
     .then(data => {
-      // if (data.page === data.total_pages) {
+      // if (pixabayInstance.hits.length <= data.per_page) {
+      //   loadMoreBtn.classList.add('is-hidden');
+
       //   Notiflix.Notify.failure(
       //     `We're sorry, but you've reached the end of search results.`
       //   );
-      //   loadMoreBtn.classList.add('is-hidden');
+      //   return;
       // }
+
+      if (data.hits.length < pixabayInstance.per_page) {
+        loadMoreBtn.classList.add('is-hidden');
+
+        Notiflix.Notify.failure(
+          `We're sorry, but you've reached the end of search results.`
+        );
+      }
+
       Notiflix.Notify.success(
         `Hooray! We found totalHits images${data.totalHits}.`
       );
+
       console.log(data);
       gallery.insertAdjacentHTML('beforeend', renderList(data.hits));
 
