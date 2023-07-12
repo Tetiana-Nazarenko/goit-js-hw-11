@@ -10,10 +10,10 @@ export function renderList(photos) {
         comments,
         downloads,
       }) => {
-        return `<a href= "${webformatURL}">
+        return `<a href= "${largeImageURL}">
          <div class="photo-card">
         
-        <img src="${largeImageURL}" alt="${tags}"  loading="lazy" />
+        <img src="${webformatURL}" alt="${tags}"  loading="lazy" />
         
         <div class="info">
           <p class="info-item"> ${likes}

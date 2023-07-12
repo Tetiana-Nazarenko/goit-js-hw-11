@@ -26,7 +26,64 @@ loadMoreBtn.classList.add('is-hidden');
 
 //*** FUNCTION SEARCHFORMSUBMIT ***/
 
-const handleSearchFormSubmit = event => {
+// const handleSearchFormSubmit = event => {
+//   event.preventDefault();
+
+//   const searchQuery = textInput.value.trim();
+
+//   if (!searchForm) {
+//     return;
+//   }
+
+//   if (searchQuery === '') {
+//     return Notiflix.Notify.failure('Sorry, please enter your request!');
+//   }
+
+//   pixabayInstance.query = searchQuery;
+//   islabelActive = true;
+
+//   pixabayInstance
+//     .fetchPhotos()
+//     .then(data => {
+//       console.log(data);
+
+//       if (!data.hits.length) {
+//         loadMoreBtn.classList.add('is-hidden');
+//         Notiflix.Notify.failure(
+//           'Sorry, there are no images matching your search query. Please try again.'
+//         );
+
+//         return;
+//       }
+
+//       if (data.hits.length < pixabayInstance.per_page) {
+//         loadMoreBtn.classList.add('is-hidden');
+//       }
+
+//       Notiflix.Notify.success(
+//         `Hooray! We found totalHits images${data.totalHits}.`
+//       );
+
+//       gallery.innerHTML = renderList(data.hits);
+
+//       lightbox.on('schown.simplelightbox');
+//       lightbox.refresh();
+
+//       smoothScroll();
+//     })
+
+//     .catch(err => {
+//       console.log(err);
+//     })
+//     .finally(() => (islabelActive = false));
+
+//   searchForm.reset();
+//   loadMoreBtn.classList.remove('is-hidden');
+// };
+
+//*** ASYNC/AWAIT METHOD SEARCHFORMSUBMIT*/
+
+const handleSearchFormSubmit = async event => {
   event.preventDefault();
 
   const searchQuery = textInput.value.trim();
@@ -42,54 +99,42 @@ const handleSearchFormSubmit = event => {
   pixabayInstance.query = searchQuery;
   islabelActive = true;
 
-  pixabayInstance
-    .fetchPhotos()
-    .then(data => {
-      console.log(data);
+  try {
+    const data = await pixabayInstance.fetchPhotos();
+    console.log(data);
 
-      if (!data.hits.length) {
-        loadMoreBtn.classList.add('is-hidden');
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
+    if (!data.hits.length) {
+      loadMoreBtn.classList.add('is-hidden');
 
-        return;
-      }
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      throw new Error();
+    }
+    if (data.hits.length < pixabayInstance.per_page) {
+      loadMoreBtn.classList.add('is-hidden');
+    }
 
-      if (data.hits.length < pixabayInstance.per_page) {
-        loadMoreBtn.classList.add('is-hidden');
-
-        Notiflix.Notify.failure(
-          `We're sorry, but you've reached the end of search results.`
-        );
-      }
-
+    if (data.hits.length > 0) {
       Notiflix.Notify.success(
         `Hooray! We found totalHits images${data.totalHits}.`
       );
+    }
 
-      gallery.innerHTML = renderList(data.hits);
+    gallery.innerHTML = renderList(data.hits);
 
-      lightbox.on('schown.simplelightbox');
-      lightbox.refresh();
+    lightbox.on('schown.simplelightbox');
+    lightbox.refresh();
 
-      //***SMOOTH-SCROLL ***/
-      const { height: cardHeight } = document
-        .querySelector('.gallery')
-        .firstElementChild.getBoundingClientRect();
-      window.scrollBy({
-        top: cardHeight * 2,
-        behavior: 'smooth',
-      });
-    })
+    smoothScroll();
 
-    .catch(err => {
-      console.log(err);
-    })
-    .finally(() => (islabelActive = false));
-
+    loadMoreBtn.classList.remove('is-hidden');
+  } catch (err) {
+    console.log(err.message);
+  } finally {
+    () => (islabelActive = false);
+  }
   searchForm.reset();
-  loadMoreBtn.classList.remove('is-hidden');
 };
 
 searchForm.addEventListener('submit', handleSearchFormSubmit);
@@ -102,43 +147,70 @@ let lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 
+//***SMOOTH-SCROLL ***/
+function smoothScroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+}
 //*** FUNCTION LOAD-MORE */
 
-function handleLoadMore() {
+// function handleLoadMore() {
+//   pixabayInstance.page += 1;
+
+//   pixabayInstance
+//     .fetchPhotos()
+//     .then(data => {
+//       if (data.hits.length < pixabayInstance.per_page) {
+//         loadMoreBtn.classList.add('is-hidden');
+
+//         Notiflix.Notify.failure(
+//           `We're sorry, but you've reached the end of search results.`
+//         );
+//       }
+
+//       console.log(data);
+//       gallery.insertAdjacentHTML('beforeend', renderList(data.hits));
+
+//       lightbox.on('schown.simplelightbox');
+//       lightbox.refresh();
+
+//       smoothScroll();
+//     })
+//     .catch(err => {
+//       console.log(err);
+//     });
+// }
+
+//***ASYNC/AWAIT METHOD  LOAD-MORE*/
+async function handleLoadMore() {
   pixabayInstance.page += 1;
 
-  pixabayInstance
-    .fetchPhotos()
-    .then(data => {
-      // if (pixabayInstance.hits.length <= data.per_page) {
-      //   loadMoreBtn.classList.add('is-hidden');
+  try {
+    const data = await pixabayInstance.fetchPhotos();
+    console.log(data);
+    if (data.hits.length < pixabayInstance.per_page) {
+      loadMoreBtn.classList.add('is-hidden');
 
-      //   Notiflix.Notify.failure(
-      //     `We're sorry, but you've reached the end of search results.`
-      //   );
-      //   return;
-      // }
-
-      if (data.hits.length < pixabayInstance.per_page) {
-        loadMoreBtn.classList.add('is-hidden');
-
-        Notiflix.Notify.failure(
-          `We're sorry, but you've reached the end of search results.`
-        );
-      }
-
-      Notiflix.Notify.success(
-        `Hooray! We found totalHits images${data.totalHits}.`
+      Notiflix.Notify.failure(
+        `We're sorry, but you've reached the end of search results.`
       );
+    }
+    gallery.insertAdjacentHTML('beforeend', renderList(data.hits));
 
-      console.log(data);
-      gallery.insertAdjacentHTML('beforeend', renderList(data.hits));
+    lightbox.on('schown.simplelightbox');
+    lightbox.refresh();
 
-      lightbox.on('schown.simplelightbox');
-      lightbox.refresh();
-    })
-    .catch(err => {
-      console.log(err);
-    });
+    smoothScroll();
+  } catch (err) {
+    console.log(err.message);
+  }
+  searchForm.reset();
 }
+
 loadMoreBtn.addEventListener('click', handleLoadMore);
